@@ -1,2 +1,3 @@
 # review-bot
-Slack bot for code reviews
+
+> Slack bot for code reviews
