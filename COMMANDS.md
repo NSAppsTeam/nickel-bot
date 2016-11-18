@@ -7,3 +7,4 @@
 `/review comment {number}`
 `/review post {number}`
 `/review close {number}`
+`/review transfer {number}`

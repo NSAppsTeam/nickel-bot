@@ -1,0 +1,33 @@
+{
+  "commands": [
+    {
+      "name": "accept",
+      "desc": "Accept a merge request by number",
+      "input": [
+        {
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "name": "merge",
+      "desc": "Accept and close a merge request for another"
+    },
+    {
+      "name": "comment",
+      "desc": "Inform merge request owner that merge request has comments"
+    },
+    {
+      "name": "open",
+      "desc": "Post merge request is ready for review"
+    },
+    {
+      "name": "close",
+      "desc": "Remove merge request from list"
+    },
+    {
+      "name": "list",
+      "desc": "Display all open merge requests"
+    }
+  ]
+}
