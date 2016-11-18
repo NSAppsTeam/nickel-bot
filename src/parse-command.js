@@ -3,7 +3,7 @@ const fs = require('fs');
 const SecurityError = require('./errors/security-error');
 
 const COMMAND_FILE = './commands.json';
-const TEAM_TOKEN = process.env.TEAM_TOKEN;
+const TEAM_TOKEN = process.env.TEAM_TOKEN || Math.random(); // Seriously, you must have it set
 
 var commandLookup = new Promise((resolve, reject) => {
   fs.readFile(COMMAND_FILE, 'utf8', (err, contents) => {
@@ -30,6 +30,7 @@ function validateToken(token) {
 module.exports = (req) => {
   return new Promise((resolve, reject) => {
     validateToken(req.body.token);
+    winston.info(req.body);
     resolve('OK');
   });
 }
