@@ -1,5 +1,7 @@
 const winston = require('winston');
 const fs = require('fs');
+const _ = require('lodash');
+
 const SecurityError = require('./errors/security-error');
 
 const COMMAND_FILE = './commands.json';
@@ -15,8 +17,54 @@ var commandLookup = new Promise((resolve, reject) => {
   });
 });
 
-function resolveCommand() {
+function errorWrap(name, message, delimiter) {
+  delimiter = delimiter || ':\xa0';
 
+  return 'Error'.concat(delimiter, name, delimiter, message);
+}
+
+function buildMsgStk(primary, block) {
+  function wrapArg(arg) {
+    return '[' + arg + ']';
+  }
+
+  var msg = block.name;
+
+  (block.input || []).forEach((input) => {
+    msg += '\xa0' + wrapArg(input.type.toUpperCase());
+  });
+
+  msg += '\xa0'.repeat(5) + block.desc;
+  msg += '\r\n\r\n';
+  msg += primary;
+
+  return msg;
+}
+
+function verifyInputs(cmdObj) {
+  var inputs = Array.prototype.slice.call(arguments[1], 1);
+  for (var i = 0; i < inputs.length; i++) {
+    var matchInput = cmdObj.input[i] || { type: 'unknown' };
+
+    if (!(typeof (Number(inputs[i]) || inputs[i]) === matchInput.type)) {
+      return buildMsgStk(errorWrap('CommandError',
+        inputs[i] + ' is an invalid input'), cmdObj);
+    }
+  }
+}
+
+function resolveCommand(command) {
+  return commandLookup
+  .then((contents) => {
+    return _.find(contents.commands, { name: command });
+  })
+  .then((cmdObj) => {
+    if (!cmdObj) {
+      return errorWrap('CommandError', String(command) + ' is not a valid command');
+    }
+
+    return verifyInputs.call(this, cmdObj, arguments);
+  });
 }
 
 function validateToken(token) {
@@ -27,10 +75,8 @@ function validateToken(token) {
   throw new SecurityError('Token does not match team\'s ');
 }
 
+
 module.exports = (req) => {
-  return new Promise((resolve, reject) => {
-    validateToken(req.body.token);
-    winston.info(req.body);
-    resolve('OK');
-  });
+  validateToken(req.body.token);
+  return resolveCommand.apply(this, (req.body.text || '').split(' '));
 }
