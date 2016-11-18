@@ -4,10 +4,10 @@ const winston = require('winston');
 const bodyParser = require('body-parser');
 
 var server = express();
-var router = require('./lib/router');
+var router = require('./src/router');
 var PORT = process.env.PORT || 8000;
 
-server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ extended: false }));
 server.use(helmet());
 server.use('/review', router);
 
