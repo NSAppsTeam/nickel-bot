@@ -3,6 +3,9 @@ var parseCommand = require('./parse-command');
 
 var router = express.Router();
 
-router.post('/', parseCommand);
+router.post('/', (req, res) => {
+  parseCommand(req)
+  .then(res.send);
+});
 
 module.exports = router;
