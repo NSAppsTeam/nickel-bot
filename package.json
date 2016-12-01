@@ -14,7 +14,7 @@
     "url": "git+ssh://git@github.com/manufacturedba/review-bot.git"
   },
   "engines": {
-    "node": "6.9.2",
+    "node": "6.9.1",
     "npm": "3.8.5"
   },
   "author": "Roberto Rodriguez <roberto@thinkcrunch.com>",
