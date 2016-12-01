@@ -1,6 +1,7 @@
-const mongoClient = require('mongodb').MongoClient
+const mongoClient = require('mongodb').MongoClient;
+const env = require('./env');
 
-const URI = process.env.MONGOLAB_URI || 'mongodb://localhost:27017/review-bot';
+const URI = env.MONGOLAB_URI || 'mongodb://localhost:27017/review-bot';
 
 module.exports = {
   _db: null,
@@ -20,4 +21,4 @@ module.exports = {
       });
     });
   }
-}
+};
