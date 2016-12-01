@@ -1,11 +1,13 @@
 const winston = require('winston');
 const fs = require('fs');
-const _ = require('lodash');
+const _ = require('underscore');
 
+const env = require('./env');
+const Direct = require('./direct');
 const SecurityError = require('./errors/security-error');
 
 const COMMAND_FILE = './commands.json';
-const TEAM_TOKEN = process.env.TEAM_TOKEN || Math.random(); // Seriously, you must have it set
+const TEAM_TOKEN = env.TEAM_TOKEN || Math.random(); // Seriously, you must have it set
 
 var commandLookup = new Promise((resolve, reject) => {
   fs.readFile(COMMAND_FILE, 'utf8', (err, contents) => {
@@ -53,7 +55,14 @@ function verifyInputs(cmdObj) {
   }
 }
 
+/**
+ * Perform requested action by payload
+ * @param  {Object} command Command action with arguments
+ * @return {Object} Response message by action
+ */
 function resolveCommand(command) {
+  var direct = new Direct(command);
+
   return commandLookup
   .then((contents) => {
     return _.find(contents.commands, { name: command });
@@ -63,10 +72,20 @@ function resolveCommand(command) {
       return errorWrap('CommandError', String(command) + ' is not a valid command');
     }
 
-    return verifyInputs.call(this, cmdObj, arguments);
+    var message = verifyInputs.call(this, cmdObj, arguments);
+
+    if (!message) {
+      return direct.execute(command);
+    }
   });
 }
 
+/**
+ * Match environment token against token from JSON payload
+ *
+ * @param  {String} token Passed string token
+ * @return {Boolean} Returns true if token matches
+ */
 function validateToken(token) {
   if (token === TEAM_TOKEN) {
     return true;
@@ -78,5 +97,5 @@ function validateToken(token) {
 
 module.exports = (req) => {
   validateToken(req.body.token);
-  return resolveCommand.apply(this, (req.body.text || '').split(' '));
-}
+  return resolveCommand.apply(this, req.body.text.split(' '));
+};
