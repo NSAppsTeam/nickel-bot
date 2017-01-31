@@ -12,6 +12,10 @@ server.use(bodyParser.urlencoded({ extended: false }));
 server.use(helmet());
 server.use('/review', router);
 
+function _get() {
+  return server;
+}
+
 function run(fn) {
 
   fn = fn || function _defaultStart() {
@@ -26,5 +30,6 @@ if (require.main === module) {
 }
 
 module.exports = {
+  _get: _get,
   run: run
 };
