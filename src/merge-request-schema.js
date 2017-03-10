@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.schema;
+const Schema = mongoose.Schema;
 
 module.exports = new Schema({
   merge_request: {
