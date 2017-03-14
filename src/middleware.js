@@ -1,7 +1,7 @@
 const winston = require('winston');
 const env = require('./env');
 const GITLAB_TOKEN = env.GITLAB_TOKEN || Math.random(); // Seriously, you must have it set
-const GITLAB_EVENT_NAME = 'Push Hook';
+const GITLAB_EVENT_NAME = 'Merge Request Hook';
 
 module.exports = {
   /**
