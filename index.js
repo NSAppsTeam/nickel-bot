@@ -3,14 +3,18 @@ const helmet = require('helmet');
 const winston = require('winston');
 const bodyParser = require('body-parser');
 const env = require('./src/env');
+var mongoose = require('mongoose');
+
+// Built-in Promise support is deprecated
+mongoose.Promise = require('q').Promise;
 
 var server = express();
 var router = require('./src/router');
 var PORT = env.PORT || 8000;
 
-server.use(bodyParser.urlencoded({ extended: false }));
+server.use(bodyParser.json());
 server.use(helmet());
-server.use('/review', router);
+server.use('/', router);
 
 function _get() {
   return server;
