@@ -17,7 +17,7 @@ module.exports = {
       work_in_progress: Boolean
     },
     last_commit: {
-      id: Number,
+      id: String,
       message: String,
       timestamp: String,
       url: String,
