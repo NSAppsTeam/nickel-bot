@@ -1,36 +1,22 @@
 const express = require('express');
 const winston = require('winston');
+const mergeRequestSchema = require('./merge-request-schema');
 const db = require('./db');
 const Storage = require('./storage').Storage;
+const middleware = require('./middleware');
 const router = express.Router();
 const gitlabRouter = express.Router({mergeParams: true});
-const SecurityError = require('./errors/security-error');
 
-var storage = new Storage(db.connect());
-
-const TEAM_TOKEN = env.TEAM_TOKEN || Math.random(); // Seriously, you must have it set
-
-/**
- * Match environment token against token from JSON payload
- *
- * @param  {String} token Passed string token
- * @return {Boolean} Returns true if token matches
- */
-function validateToken(req) {
-  return new Promise((resolve, reject) => {
-    if (req.body.token === TEAM_TOKEN) {
-      return resolve(req.body);
-    }
-
-    reject(new SecurityError('Token does not match team\'s '));
-  });
-}
+var storage = new Storage({
+  connection: db.connect(),
+  schema: mergeRequestSchema
+});
 
 function expressify(promisable) {
 
   return (req, res) => {
-    validateToken(req.body)
-    .then(promisable)
+
+    promisable(req.body)
     .then((payload) => res.status(200).send(payload))
     .catch((err) => {
       winston.error(err);
@@ -39,8 +25,9 @@ function expressify(promisable) {
   };
 }
 
-gitlabRouter.route('/')
-.post(expressify(storage.merge));
+gitlabRouter.use(middleware.gitlab);
+gitlabRouter.route('/merge-request')
+.post(expressify(storage.add));
 
 router.use('/gitlab', gitlabRouter);
 
