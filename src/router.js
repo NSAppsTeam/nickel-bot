@@ -1,11 +1,20 @@
 const express = require('express');
 const winston = require('winston');
+const rtm = require('./rtm');
 const mergeRequestSchema = require('./merge-request-schema');
 const db = require('./db');
 const Storage = require('./storage').Storage;
 const middleware = require('./middleware');
 const router = express.Router();
 const gitlabRouter = express.Router({mergeParams: true});
+
+rtm.start()
+.then(() => {
+  winston.debug('Slack RTM has connected');
+})
+.catch(() => {
+  winston.error('Slack RTM has failed to connect.  You will not be able to send messages until this is fixed');
+});
 
 var storage = new Storage({
   connection: db.connect(),
