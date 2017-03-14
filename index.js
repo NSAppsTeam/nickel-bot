@@ -8,7 +8,7 @@ var server = express();
 var router = require('./src/router');
 var PORT = env.PORT || 8000;
 
-server.use(bodyParser.urlencoded({ extended: false }));
+server.use(bodyParser.json());
 server.use(helmet());
 server.use('/', router);
 
