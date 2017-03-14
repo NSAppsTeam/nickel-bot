@@ -6,14 +6,12 @@ const transformers = {
   merge_request: function(payload) {
     return {
       merge_request: payload.object_attributes,
-      last_commit: payload.last_commit,
-      project: payload.target,
+      last_commit: payload.object_attributes.last_commit,
+      project: payload.object_attributes.target,
       author: payload.user,
-      assignee: {
-        claimed_on_slack: false,
-        name: '',
-        username: ''
-      }
+      assignee: Object.assign({}, payload.object_attributes.assignee, {
+        claimed_on_slack: false
+      })
     };
   }
 };
