@@ -26,7 +26,7 @@ function expressify(promisable) {
   return (req, res) => {
 
     promisable(req.body)
-    .then((payload) => res.status(200).send(payload))
+    .then((msg) => res.status(200).send(msg))
     .catch((err) => {
       winston.error(err);
       res.sendStatus(500);
@@ -34,9 +34,35 @@ function expressify(promisable) {
   };
 }
 
+function sendMergeButton(body) {
+  return storage.add(body)
+  .then((modelObj) => {
+    rtm.send({
+      text: 'Merge request opened by ' + modelObj.author.username,
+      attachments: [
+        {
+          fallback: 'Unable to accept merge request',
+          callback_id: 'merge_request',
+          color: '#db3236',
+          attachment_type: 'default',
+          actions: [
+            {
+              name: 'option',
+              text: 'Accept',
+              type: 'button',
+              value: 'accept'
+            }
+          ]
+        }
+      ]
+    }, '#peer-review');
+    return 'Created at ' + Date();
+  });
+}
+
 gitlabRouter.use(middleware.gitlab);
 gitlabRouter.route('/merge-request')
-.post(expressify(storage.add));
+.post(expressify(sendMergeButton));
 
 router.use('/gitlab', gitlabRouter);
 
