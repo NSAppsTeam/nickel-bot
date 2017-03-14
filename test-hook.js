@@ -81,10 +81,15 @@ var example = {
 var req = http.request({
   method: 'POST',
   port: 8000,
-  path: '/gitlab'
+  path: '/gitlab/merge-request',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Gitlab-Event': 'Merge Request Hook',
+    'X-Gitlab-Token': 'bambam'
+  }
 }, (res) => {
   res.setEncoding('utf8');
-  
+
   res.on('error', (err) => {
     console.error(err);
   });
