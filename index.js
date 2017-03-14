@@ -3,15 +3,14 @@ const helmet = require('helmet');
 const winston = require('winston');
 const bodyParser = require('body-parser');
 const env = require('./src/env');
-const q = require('q');
 var mongoose = require('mongoose');
+
+// Built-in Promise support is deprecated
+mongoose.Promise = require('q').Promise;
 
 var server = express();
 var router = require('./src/router');
 var PORT = env.PORT || 8000;
-
-// Built-in Promise support is deprecated
-mongoose.Promise = q.Promise;
 
 server.use(bodyParser.json());
 server.use(helmet());
