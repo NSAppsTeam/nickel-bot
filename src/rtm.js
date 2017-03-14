@@ -1,6 +1,7 @@
 const RtmClient = require('@slack/client').RtmClient;
 const MemoryDataStore = require('@slack/client').MemoryDataStore;
 const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
+const RTM_EVENTS = require('@slack/client').RTM_EVENTS:
 const winston = require('winston');
 const env = require('./env');
 
@@ -46,9 +47,22 @@ function start() {
 }
 module.exports = {
   start: start,
-  sendMessage: (message, channel) => {
+
+  _invoke: (method) => {
+    var args = Array.prototype.slice.call(arguments, 1);
+
     return floodgate.promise.then(() => {
-      return rtm.sendMessage(message, channel);
+      return rtm[method].apply(rtm, args);
     });
+  },
+
+  send: (message, channel) => {
+    var body = {...message};
+    body.type = RTM_EVENTS.MESSAGE;
+    return this._invoke('send', message, channel);
+  },
+
+  sendMessage: (message, channel) => {
+    return this._invoke('sendMessage', message, channel);
   }
 };
