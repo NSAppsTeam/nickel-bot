@@ -3,6 +3,7 @@ const winston = require('winston');
 const rtm = require('./rtm');
 const mergeRequestSchema = require('./merge-request-schema');
 const db = require('./db');
+const env = require('./env');
 const Storage = require('./storage').Storage;
 const middleware = require('./middleware');
 const router = express.Router();
@@ -37,7 +38,7 @@ function expressify(promisable) {
 function sendMergeButton(body) {
   return storage.add(body)
   .then((modelObj) => {
-    rtm.send({
+    rtm.send.call(rtm, {
       text: 'Merge request opened by ' + modelObj.author.username,
       attachments: [
         {
@@ -55,7 +56,10 @@ function sendMergeButton(body) {
           ]
         }
       ]
-    }, '#peer-review');
+    })
+    .catch((err) => {
+      winston.error(err);
+    });
     return 'Created at ' + Date();
   });
 }

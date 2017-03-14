@@ -1,7 +1,7 @@
 const RtmClient = require('@slack/client').RtmClient;
 const MemoryDataStore = require('@slack/client').MemoryDataStore;
 const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
-const RTM_EVENTS = require('@slack/client').RTM_EVENTS:
+const RTM_EVENTS = require('@slack/client').RTM_EVENTS;
 const winston = require('winston');
 const env = require('./env');
 
@@ -45,7 +45,7 @@ function start() {
     rtm.start();
   });
 }
-module.exports = {
+var mod = {
   start: start,
 
   _invoke: (method) => {
@@ -57,12 +57,14 @@ module.exports = {
   },
 
   send: (message, channel) => {
-    var body = {...message};
+    var body = Object.assign({}, message);
     body.type = RTM_EVENTS.MESSAGE;
-    return this._invoke('send', message, channel);
+    return mod._invoke('send', message, rtm.dataStore.getChannelByName('#gitlab').id);
   },
 
   sendMessage: (message, channel) => {
-    return this._invoke('sendMessage', message, channel);
+    return mod._invoke('sendMessage', message, rtm.dataStore.getChannelByName('#gitlab').id);
   }
 };
+
+module.exports = mod;
