@@ -6,7 +6,7 @@ const env = require('./src/env');
 var mongoose = require('mongoose');
 
 // Built-in Promise support is deprecated
-mongoose.Promise = require('q').Promise;
+mongoose.Promise = global.Promise;
 
 var server = express();
 var router = require('./src/router');
