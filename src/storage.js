@@ -36,11 +36,7 @@ class Storage {
    */
   add(obj) {
     var instance = new this._model(transform(obj));
-    return instance.save()
-    .then((res) => {
-      winston.debug(res);
-      return 'Created at ' + Date();
-    });
+    return instance.save();
   }
 }
 
